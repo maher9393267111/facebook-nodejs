@@ -30,7 +30,9 @@ const UserSchema = new mongoose.Schema(
       },
       dob: {
          type: Date,
-         required: [true, "Please provide date of birth"],
+         default: Date.now,
+
+       //  required: [true, "Please provide date of birth"],
       },
       location: {
          type: String,

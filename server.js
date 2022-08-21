@@ -4,6 +4,7 @@ const { clientURL } = require("./URL");
 const fileUpload = require("express-fileupload");
 const express = require("express");
 const cloudinary = require("cloudinary").v2;
+const morgan = require("morgan");
 
 
 const connectDB = require("./db/connect");
@@ -40,6 +41,9 @@ app.get("/", (req, res) => {
 
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
+const postRouter = require("./routes/post");
+const chatRouter = require("./routes/chat");
+const messageRouter = require("./routes/message");
 
 
 //middle wares
@@ -52,9 +56,14 @@ app.use(xss());
 app.use(helmet());
 app.use(express.json());
 app.use(fileUpload({ useTempFiles: true }));
-app.use(cors({ origin: clientURL }));
+app.use(cors());
+app.use(morgan("dev"));
+// 
 
+// socket io
 
+const { addUser, getUserID, getSocketID, removeUser } = require("./socket/users");
+const { createMessage, deleteMessages, deleteChat } = require("./utils/messageSocketEvents");
 
 
 
@@ -82,6 +91,10 @@ io.on("connection", socket => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", authorizationMiddleware, userRouter);
+app.use("/api/v1/posts", authorizationMiddleware, postRouter);
+app.use("/api/v1/chats", authorizationMiddleware, chatRouter);
+app.use("/api/v1/messages", authorizationMiddleware, messageRouter);
+
 
 
 

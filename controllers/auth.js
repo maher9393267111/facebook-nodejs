@@ -1,11 +1,12 @@
 const User = require("../models/User");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError, AuthenticationError } = require("../errors");
-
+const  sendEmail  = require('../utils/mailjet.js');
 const register = async (req, res) => {
 	let user = await User.findOne({ email: req.body.email });
 	if (user) throw new BadRequestError("User already exists");
 	user = await User.create({ ...req.body });
+	await sendEmail( req.body.email)
 	const { _id: id, name, profileImage } = user;
 	const token = user.createJWT();
 	res.status(StatusCodes.CREATED).json({
